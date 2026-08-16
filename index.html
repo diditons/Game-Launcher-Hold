@@ -306,7 +306,6 @@
         flex-direction: column;
         justify-content: flex-end;
         padding: 40px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         background-size: cover;
         background-position: center;
     }
@@ -2090,53 +2089,102 @@
         </div>
     </div>
 
-    <div class="modal" id="welcomeSetupModal">
-        <div class="profile-card-modal">
-            <div class="profile-banner" style="background: linear-gradient(90deg, #00c8ff, #0066ff); display:flex; align-items:center; justify-content:center;">
-                <span style="font-size:34px;">👋</span>
+    <div class="modal" id="authModal" style="display:flex;">
+        <div class="profile-card-modal" style="max-width:380px;">
+            <div class="profile-banner" style="height:70px; background: linear-gradient(90deg, #00c8ff, #0066ff); display:flex; align-items:center; justify-content:center;">
+                <span style="font-size:26px;">🔐</span>
             </div>
-            <div class="profile-info-body">
-                <h2 class="profile-name" style="margin-top:14px;">¡Bienvenido a Ultimate Game Launcher!</h2>
-                <p class="profile-bio" style="margin-top:4px;">Configura tu cuenta antes de empezar — puedes cambiarlo después cuando quieras desde tu perfil.</p>
+            <div class="profile-info-body" style="padding:0 22px 22px;">
+                <h2 class="profile-name" style="margin-top:12px; font-size:17px;">Ultimate Game Launcher</h2>
+                <p class="profile-bio" style="margin-top:3px; font-size:12px; margin-bottom:0;">Inicia sesión, crea una cuenta o entra como invitado.</p>
 
-                <div class="profile-large-avatar" id="welcomeAvatarPreview" style="margin-top:14px;">G</div>
+                <div class="payment-method-tabs" id="authTabs" style="margin-top:14px;">
+                    <button class="payment-method-tab active" data-auth-tab="login" style="flex:1 1 45%;">Iniciar Sesión</button>
+                    <button class="payment-method-tab" data-auth-tab="signup" style="flex:1 1 45%;">Registrarse</button>
+                </div>
 
-                <div style="display:flex; flex-direction:column; gap:14px; margin-top:10px;">
+                <div style="display:flex; flex-direction:column; gap:10px; margin-top:12px;">
                     <div>
-                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:5px;">Nombre de usuario</label>
-                        <input type="text" id="welcomeNameInput" placeholder="Tu nombre" style="width:100%; padding:9px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
+                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Correo electrónico</label>
+                        <input type="email" id="authEmailInput" placeholder="tu@correo.com" style="width:100%; padding:9px 11px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
                     </div>
                     <div>
-                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:5px;">Foto de perfil</label>
-                        <input type="text" id="welcomeAvatarInput" placeholder="https://ejemplo.com/mi-foto.png" style="width:100%; padding:9px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
-                        <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
-                            <label for="welcomeAvatarFileInput" class="settings-btn" style="display:inline-flex; cursor:pointer; margin:0;">📁 Adjuntar imagen</label>
+                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Contraseña</label>
+                        <input type="password" id="authPasswordInput" placeholder="••••••••" style="width:100%; padding:9px 11px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
+                    </div>
+                    <div id="authConfirmPasswordRow" style="display:none;">
+                        <label style="display:block; font-size:11px; color:#aaa; margin-bottom:4px;">Confirmar contraseña</label>
+                        <input type="password" id="authConfirmPasswordInput" placeholder="••••••••" style="width:100%; padding:9px 11px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
+                    </div>
+                </div>
+
+                <p id="authError" style="display:none; color:#ff4747; font-size:12px; margin-top:10px;"></p>
+                <p id="authSuccess" style="display:none; color:#00e676; font-size:12px; margin-top:10px;"></p>
+
+                <button class="btn-add-friend" id="btnAuthSubmit" style="margin-top:14px;">Iniciar Sesión</button>
+
+                <div style="display:flex; align-items:center; gap:10px; margin:14px 0;">
+                    <div style="flex:1; height:1px; background:rgba(255,255,255,0.08);"></div>
+                    <span style="font-size:11px; color:#666;">o</span>
+                    <div style="flex:1; height:1px; background:rgba(255,255,255,0.08);"></div>
+                </div>
+
+                <button class="settings-btn" id="btnAuthGuest" style="width:100%;">👤 Continuar como Invitado</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="welcomeSetupModal">
+        <div class="profile-card-modal" style="max-width:400px;">
+            <div class="profile-banner" style="height:85px; background: linear-gradient(90deg, #00c8ff, #0066ff); display:flex; align-items:center; justify-content:center; position:relative; overflow:visible;">
+                <span style="font-size:30px;">👋</span>
+                <div class="profile-large-avatar" id="welcomeAvatarPreview" style="width:60px; height:60px; font-size:26px; margin:0; position:absolute; left:22px; bottom:-30px;">G</div>
+            </div>
+            <div class="profile-info-body" style="max-height:82vh; overflow-y:auto; padding:0 22px 22px;">
+                <h2 class="profile-name" style="margin-top:38px; font-size:18px;">¡Bienvenido a Ultimate Game Launcher!</h2>
+                <p class="profile-bio" style="margin-top:4px; font-size:12.5px; margin-bottom:0;">Configura tu cuenta antes de empezar — puedes cambiarla luego desde tu perfil.</p>
+
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                    <div>
+                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:4px;">Nombre de usuario</label>
+                        <input type="text" id="welcomeNameInput" placeholder="Tu nombre" style="width:100%; padding:9px 11px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:4px;">Foto de perfil</label>
+                        <input type="text" id="welcomeAvatarInput" placeholder="https://ejemplo.com/mi-foto.png" style="width:100%; padding:9px 11px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-top:7px;">
+                            <label for="welcomeAvatarFileInput" class="settings-btn" style="display:inline-flex; cursor:pointer; margin:0; padding:7px 13px; font-size:11.5px;">📁 Adjuntar imagen</label>
                             <input type="file" id="welcomeAvatarFileInput" accept="image/*" style="display:none;">
                             <span id="welcomeAvatarFileName" style="font-size:11px; color:#888;"></span>
                         </div>
                         <span style="font-size:11px; color:#666;">Déjalo vacío para usar la inicial de tu nombre.</span>
                     </div>
                     <div>
-                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:5px;">Biografía</label>
-                        <textarea id="welcomeBioInput" rows="2" placeholder="Cuéntale a la comunidad algo sobre ti..." style="width:100%; padding:9px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none; resize:none;"></textarea>
+                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:4px;">Biografía</label>
+                        <textarea id="welcomeBioInput" rows="2" placeholder="Cuéntale a la comunidad algo sobre ti..." style="width:100%; padding:9px 11px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none; resize:none;"></textarea>
                     </div>
+
                     <div>
-                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:8px;">Vincular cuentas (opcional)</label>
-                        <div style="display:flex; gap:10px;">
-                            <button class="settings-btn" id="btnWelcomeLinkSteam" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 0;">
-                                <img src="" id="welcomeSteamIcon" alt="Steam" style="width:18px; height:18px; object-fit:contain;">
+                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:7px;">Vincular cuentas y comunidad</label>
+                        <div style="display:flex; gap:8px;">
+                            <button class="settings-btn" id="btnWelcomeLinkSteam" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 0; font-size:12px;">
+                                <img src="" id="welcomeSteamIcon" alt="Steam" style="width:16px; height:16px; object-fit:contain;">
                                 Steam
                             </button>
-                            <button class="settings-btn" id="btnWelcomeLinkRoblox" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 0;">
-                                <img src="" id="welcomeRobloxIcon" alt="Roblox" style="width:18px; height:18px; object-fit:contain;">
+                            <button class="settings-btn" id="btnWelcomeLinkRoblox" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 0; font-size:12px;">
+                                <img src="" id="welcomeRobloxIcon" alt="Roblox" style="width:16px; height:16px; object-fit:contain;">
                                 Roblox
                             </button>
+                            <a href="https://discord.gg/cNh539xXFS" target="_blank" class="settings-btn" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 0; font-size:12px; text-decoration:none; box-sizing:border-box;">
+                                <img src="https://static.vecteezy.com/system/resources/previews/023/986/880/non_2x/discord-logo-discord-logo-transparent-discord-icon-transparent-free-free-png.png" alt="Discord" style="width:16px; height:16px; object-fit:contain;">
+                                Discord
+                            </a>
                         </div>
                     </div>
                 </div>
 
                 <button class="btn-add-friend" id="btnSaveWelcomeSetup" style="margin-top:16px;">Guardar y Empezar</button>
-                <button class="settings-btn" id="btnSkipWelcomeSetup" style="width:100%; margin-top:10px;">Omitir por ahora</button>
+                <button class="settings-btn" id="btnSkipWelcomeSetup" style="width:100%; margin-top:9px;">Omitir por ahora</button>
             </div>
         </div>
     </div>
@@ -2364,7 +2412,7 @@
                         <input type="text" id="linkAccountUsername" placeholder="Tu usuario" style="width:100%; padding:9px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
                     </div>
                     <div>
-                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:5px;">Contraseña</label>
+                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:5px;">ID de usuario</label>
                         <input type="text" id="linkAccountUserId" placeholder="Ej. 76561198012345678" style="width:100%; padding:9px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
                     </div>
                     <div>
@@ -2834,8 +2882,19 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script>
         // Base de datos de juegos
+        // ===== INICIO DE SESIÓN (Supabase) =====
+        // La "publishable key" (clave anon) de Supabase está diseñada para
+        // vivir en el navegador — la seguridad real la da el Row Level
+        // Security de tu proyecto, no ocultar esta clave.
+        const SUPABASE_URL = 'https://iajzaokwpdajljmchhza.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_x8h62EVtaua0oWq5Sin0yg_3C9oNxFX';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let currentAuthTab = 'login';
+        let isGuestSession = false;
+
         const GAMES_DATABASE = {
             beamng: {
                 id: 'beamng',
@@ -2854,7 +2913,7 @@
                 wishlisted: false,
                 desc: 'BeamNG.drive es un juego de conducción dinámico sin límites. Nuestro motor de físicas de cuerpo blando simula cada componente de un vehículo en tiempo real, resultando en un comportamiento realista y daños extremadamente precisos.',
                 dev: 'BeamNG GmbH',
-                steamUrl: 'https://drive.google.com/uc?export=download&id=1v-6pujrPwQXuLZNAAiCaYm8GMn3DyiTD',
+                steamUrl: 'https://store.steampowered.com/app/284160/BeamNGdrive/',
                 playtimeHours: 214,
                 requirements: {
                     min: { os: 'Windows 10 64-bit', cpu: 'AMD Ryzen 5 1600 / Intel Core i5 8400', ram: '16 GB', gpu: 'GeForce GTX 550 Ti / Radeon HD 7750', directx: 'Versión 11', storage: '60 GB' },
@@ -3072,6 +3131,30 @@
                     rec: { os: 'Windows 10 (64-bit)', cpu: 'Intel Core i5 o AMD Ryzen 5', ram: '8 GB', gpu: 'Tarjeta dedicada para 60 FPS estables', storage: '8 GB' }
                 },
                 stats: { stat1: ['Popularidad', '93% Positive'], stat2: ['Jefes', '40+'], stat3: ['Espacio', '8 GB'] }
+            },
+            deltarune: {
+                id: 'deltarune',
+                title: 'DELTARUNE',
+                subtitle: 'La historia paralela a Undertale: lucha o perdona junto a nuevos personajes en batallas inspiradas en esquivar proyectiles.',
+                emoji: '💜',
+                icon: 'https://art.pixilart.com/317ca75a501a5ac.png',
+                banner: 'https://images.steamusercontent.com/ugc/794235397106253775/50E8ACB74D7B12B4DC94884018EAD11C0B709DD0/?imw=637&imh=358&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=true',
+                gifUrl: 'https://www.reddit.com/media?url=https%3A%2F%2Fpreview.redd.it%2Frecreated-animated-wallpaper-1920x1080-from-deltarune-menu-v0-hx2er6ahcrv11.gif%3Fwidth%3D600%26auto%3Dwebp%26s%3D11a7aeee6f7cdec9037adb98d0ade6009b103dfd',
+                genre: 'RPG, Indie',
+                bgGradient: 'linear-gradient(135deg, #0a0033, #4b0082)',
+                priceValue: 24.99,
+                price: '$24.99 USD',
+                isInstalled: false,
+                wishlisted: false,
+                steamUrl: 'https://store.steampowered.com/app/1671210/DELTARUNE/',
+                desc: 'En un mundo paralelo al de Undertale, exploras junto a Kris, Susie y Ralsei un reino oculto detrás de una puerta oscura. Combina combate por turnos con esquivar proyectiles al estilo bullet-hell, y decide si perdonas o luchas contra cada enemigo que encuentres.',
+                dev: 'tobyfox',
+                playtimeHours: 27,
+                requirements: {
+                    min: { os: 'Windows 10 (64-bit)', cpu: 'Cualquiera', ram: '2 GB', gpu: '128 MB', directx: 'Versión 12', storage: '1 GB' },
+                    rec: { os: 'Windows 10 (64-bit)', cpu: 'Cualquiera', ram: '4 GB', gpu: '512 MB', directx: 'Versión 12', storage: '1 GB' }
+                },
+                stats: { stat1: ['Popularidad', '98% Positive'], stat2: ['Capítulos', '1-5 disponibles'], stat3: ['Espacio', '1 GB'] }
             }
         };
 
@@ -3601,7 +3684,7 @@
             initReviews();
             initLauncherReviews();
             loadGameDetail('beamng');
-            openWelcomeSetupModal();
+            initAuth();
         }
 
         // Devuelve el HTML de un icono cuadrado: usa game.icon si existe (con
@@ -4052,8 +4135,8 @@
             document.getElementById('paymentRemaining').style.color = canAfford ? 'white' : '#ff4747';
 
             document.getElementById('paymentInsufficientNote').style.display = canAfford ? 'none' : 'block';
-            document.getElementById('paymentInsufficientNote').textContent = 'Saldo insuficiente. Añade más fondos para completar la compra.';
-            document.getElementById('btnAddFundsFromPayment').style.display = canAfford ? 'none' : 'block';
+            document.getElementById('paymentInsufficientNote').textContent = 'Saldo insuficiente para pagar con Saldo. Prueba con otro método de pago (PSE, Tarjeta, Mercado Pago o Nequi).';
+            document.getElementById('btnAddFundsFromPayment').style.display = 'none';
             document.getElementById('btnConfirmPurchase').style.display = canAfford ? 'block' : 'none';
 
             const steamLink = document.getElementById('paymentSteamLink');
@@ -4614,8 +4697,19 @@
         function initSettings() {
             document.getElementById('btnLinkSteam').onclick = () => openLinkAccountModal('steam');
             document.getElementById('btnLinkRoblox').onclick = () => openLinkAccountModal('roblox');
-            document.getElementById('btnLogout').onclick = () => {
+            document.getElementById('btnLogout').onclick = async () => {
+                if (isGuestSession) {
+                    showToast('Sesión de invitado finalizada.');
+                    location.reload();
+                    return;
+                }
+                try {
+                    await supabaseClient.auth.signOut();
+                } catch (err) {
+                    // Si falla el signOut remoto, igual reiniciamos la sesión local.
+                }
                 showToast('Sesión cerrada.');
+                location.reload();
             };
             document.getElementById('btnResetLauncher').onclick = () => {
                 if (confirm('¿Restablecer el launcher? Se perderá tu biblioteca, amigos, mods suscritos y perfil de esta sesión.')) {
@@ -5125,6 +5219,118 @@
             document.getElementById('welcomeAvatarFileName').textContent = '';
             updateWelcomeAvatarPreview();
             document.getElementById('welcomeSetupModal').style.display = 'flex';
+        }
+
+        function setAuthError(msg) {
+            const el = document.getElementById('authError');
+            document.getElementById('authSuccess').style.display = 'none';
+            if (!msg) { el.style.display = 'none'; return; }
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function setAuthSuccess(msg) {
+            const el = document.getElementById('authSuccess');
+            document.getElementById('authError').style.display = 'none';
+            if (!msg) { el.style.display = 'none'; return; }
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function proceedPastAuth(userEmail) {
+            document.getElementById('authModal').style.display = 'none';
+            if (userEmail) {
+                const suggestedName = userEmail.split('@')[0];
+                MY_PROFILE.name = suggestedName;
+                applyMyProfileToUI();
+            }
+            openWelcomeSetupModal();
+        }
+
+        async function initAuth() {
+            // Si ya hay una sesión activa de Supabase (el navegador la
+            // recuerda), nos la saltamos y entramos directo.
+            try {
+                const { data } = await supabaseClient.auth.getSession();
+                if (data && data.session) {
+                    proceedPastAuth(data.session.user.email);
+                    return;
+                }
+            } catch (err) {
+                // Si Supabase no responde (sin internet, proyecto pausado,
+                // etc.) dejamos el modal de login visible igual — el botón
+                // de invitado sigue funcionando sin depender de la red.
+            }
+
+            document.getElementById('authTabs').addEventListener('click', (e) => {
+                const tab = e.target.closest('.payment-method-tab');
+                if (!tab) return;
+                document.querySelectorAll('#authTabs .payment-method-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentAuthTab = tab.getAttribute('data-auth-tab');
+                setAuthError(null);
+                const isSignup = currentAuthTab === 'signup';
+                document.getElementById('authConfirmPasswordRow').style.display = isSignup ? 'block' : 'none';
+                document.getElementById('btnAuthSubmit').textContent = isSignup ? 'Crear Cuenta' : 'Iniciar Sesión';
+            });
+
+            document.getElementById('btnAuthSubmit').onclick = async () => {
+                const email = document.getElementById('authEmailInput').value.trim();
+                const password = document.getElementById('authPasswordInput').value;
+                setAuthError(null);
+                setAuthSuccess(null);
+
+                if (!email || !password) {
+                    setAuthError('Ingresa tu correo y contraseña.');
+                    return;
+                }
+
+                const btn = document.getElementById('btnAuthSubmit');
+                const originalText = btn.textContent;
+                btn.textContent = 'Un momento...';
+                btn.disabled = true;
+
+                try {
+                    if (currentAuthTab === 'signup') {
+                        const confirmPassword = document.getElementById('authConfirmPasswordInput').value;
+                        if (password.length < 6) {
+                            setAuthError('La contraseña debe tener al menos 6 caracteres.');
+                            return;
+                        }
+                        if (password !== confirmPassword) {
+                            setAuthError('Las contraseñas no coinciden.');
+                            return;
+                        }
+                        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                        if (error) {
+                            setAuthError(error.message);
+                            return;
+                        }
+                        if (data.session) {
+                            proceedPastAuth(email);
+                        } else {
+                            setAuthSuccess('¡Cuenta creada! Revisa tu correo para confirmar tu cuenta y luego inicia sesión.');
+                        }
+                    } else {
+                        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                        if (error) {
+                            setAuthError(error.message);
+                            return;
+                        }
+                        proceedPastAuth(email);
+                    }
+                } catch (err) {
+                    setAuthError('No se pudo conectar con el servidor de cuentas. Intenta de nuevo o entra como invitado.');
+                } finally {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            };
+
+            document.getElementById('btnAuthGuest').onclick = () => {
+                isGuestSession = true;
+                proceedPastAuth(null);
+            };
         }
 
         function initWelcomeSetup() {
