@@ -2412,7 +2412,7 @@
                         <input type="text" id="linkAccountUsername" placeholder="Tu usuario" style="width:100%; padding:9px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
                     </div>
                     <div>
-                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:5px;">Contraseña</label>
+                        <label style="display:block; font-size:12px; color:#aaa; margin-bottom:5px;">ID de usuario</label>
                         <input type="text" id="linkAccountUserId" placeholder="Ej. 76561198012345678" style="width:100%; padding:9px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
                     </div>
                     <div>
@@ -2913,7 +2913,7 @@
                 wishlisted: false,
                 desc: 'BeamNG.drive es un juego de conducción dinámico sin límites. Nuestro motor de físicas de cuerpo blando simula cada componente de un vehículo en tiempo real, resultando en un comportamiento realista y daños extremadamente precisos.',
                 dev: 'BeamNG GmbH',
-                steamUrl: 'https://drive.google.com/uc?export=download&id=1v-6pujrPwQXuLZNAAiCaYm8GMn3DyiTD',
+                steamUrl: 'https://store.steampowered.com/app/284160/BeamNGdrive/',
                 playtimeHours: 214,
                 requirements: {
                     min: { os: 'Windows 10 64-bit', cpu: 'AMD Ryzen 5 1600 / Intel Core i5 8400', ram: '16 GB', gpu: 'GeForce GTX 550 Ti / Radeon HD 7750', directx: 'Versión 11', storage: '60 GB' },
@@ -3545,6 +3545,7 @@
                 renderReviews(currentGameId);
                 showToast('¡Reseña publicada!');
                 reviewsSubmittedCount++;
+                scheduleSave();
                 renderStats();
 
                 const reviewAuthor = getAccountAuthor();
@@ -3642,6 +3643,7 @@
                 LAUNCHER_REVIEWS.unshift(review);
                 renderLauncherReviews();
                 reviewsSubmittedCount++;
+                scheduleSave();
                 renderStats();
 
                 selectedLauncherReviewStars = 0;
@@ -3794,6 +3796,7 @@
                     game.wishlisted = !game.wishlisted;
                     showToast(game.wishlisted ? `${game.title} añadido a deseados.` : `${game.title} quitado de deseados.`);
                     renderStoreGrid();
+                    scheduleSave();
                 };
                 grid.appendChild(card);
             });
@@ -3992,6 +3995,7 @@
                     game.isInstalled = true;
                     game.installedState = 'not_installed';
                     totalPurchasesMade++;
+                    scheduleSave();
                     renderSidebarGames();
                     renderStoreGrid();
                     renderStats();
@@ -4018,6 +4022,7 @@
                     game.isInstalled = true;
                     game.installedState = 'not_installed';
                     totalPurchasesMade++;
+                    scheduleSave();
                     renderSidebarGames();
                     renderStoreGrid();
                     renderStats();
@@ -4109,6 +4114,7 @@
                 WALLET_BALANCE += amount;
                 updateWalletUI();
                 renderStats();
+                scheduleSave();
                 showToast(amount > 0
                     ? `Se añadieron ${formatMoney(amount)} a tu cartera.`
                     : `Se restaron ${formatMoney(Math.abs(amount))} de tu cartera.`);
@@ -4197,6 +4203,7 @@
             game.price = "Instalado";
             game.installedState = 'not_installed';
             totalPurchasesMade++;
+            scheduleSave();
 
             renderSidebarGames();
             renderStoreGrid();
@@ -4258,6 +4265,7 @@
                 game.price = "Instalado";
                 game.installedState = 'not_installed';
                 totalPurchasesMade++;
+                scheduleSave();
 
                 updateWalletUI();
                 renderSidebarGames();
@@ -4659,6 +4667,7 @@
                 updateLinkAccountRows();
                 document.getElementById('linkAccountModal').style.display = 'none';
                 showToast(`Cuenta de ${meta.label} vinculada como ${username}.`);
+                scheduleSave();
                 if (linkModalReturnsToWelcome) {
                     linkModalReturnsToWelcome = false;
                     document.getElementById('welcomeSetupModal').style.display = 'flex';
@@ -4789,6 +4798,7 @@
 
                 REDEEMED_CODES.add(raw);
                 codesRedeemedCount++;
+                scheduleSave();
                 input.value = '';
 
                 if (code.type === 'balance') {
@@ -5038,6 +5048,7 @@
             renderCommunityFeed();
             showToast('¡Publicación creada!');
             forumPostsByUser++;
+            scheduleSave();
             renderStats();
             const preview = text.length > 200 ? text.slice(0, 200) + '...' : text;
             const forumAuthor = getAccountAuthor();
@@ -5237,8 +5248,159 @@
             el.style.display = 'block';
         }
 
-        function proceedPastAuth(userEmail) {
+        // ===== GUARDADO EN LA NUBE (Supabase) =====
+        let currentUserId = null;
+        let saveDebounceTimer = null;
+
+        function collectSaveState() {
+            return {
+                profile: { name: MY_PROFILE.name, avatarUrl: MY_PROFILE.avatarUrl, bio: MY_PROFILE.bio },
+                wallet: WALLET_BALANCE,
+                ownedGames: Object.values(GAMES_DATABASE).filter(g => g.isInstalled).map(g => g.id),
+                wishlistedGames: Object.values(GAMES_DATABASE).filter(g => g.wishlisted).map(g => g.id),
+                friends: FRIENDS_DATABASE,
+                linkedAccounts: LINKED_ACCOUNTS,
+                subscribedMods: WORKSHOP_MODS.filter(m => m.subscribed).map(m => m.id),
+                redeemedCodes: Array.from(REDEEMED_CODES),
+                debugModeUnlocked: debugModeUnlocked,
+                achievementCounters: {
+                    totalPurchasesMade, friendsAddedByUser, forumPostsByUser, reviewsSubmittedCount, codesRedeemedCount
+                },
+                gameReviews: REVIEWS_DATABASE,
+                launcherReviews: LAUNCHER_REVIEWS,
+                myForumPosts: COMMUNITY_POSTS.filter(p => p.badge === 'Tú')
+            };
+        }
+
+        function applySaveState(state) {
+            if (!state) return;
+
+            if (state.profile) {
+                MY_PROFILE.name = state.profile.name || MY_PROFILE.name;
+                MY_PROFILE.avatarUrl = state.profile.avatarUrl || '';
+                MY_PROFILE.bio = state.profile.bio || MY_PROFILE.bio;
+            }
+            if (typeof state.wallet === 'number') WALLET_BALANCE = state.wallet;
+
+            if (Array.isArray(state.ownedGames)) {
+                state.ownedGames.forEach(id => {
+                    const g = GAMES_DATABASE[id];
+                    if (g) { g.isInstalled = true; g.price = 'Instalado'; g.installedState = g.installedState || 'not_installed'; }
+                });
+            }
+            if (Array.isArray(state.wishlistedGames)) {
+                state.wishlistedGames.forEach(id => { const g = GAMES_DATABASE[id]; if (g) g.wishlisted = true; });
+            }
+            if (Array.isArray(state.friends) && state.friends.length) {
+                FRIENDS_DATABASE.length = 0;
+                state.friends.forEach(f => FRIENDS_DATABASE.push(f));
+            }
+            if (state.linkedAccounts) {
+                Object.assign(LINKED_ACCOUNTS, state.linkedAccounts);
+            }
+            if (Array.isArray(state.subscribedMods)) {
+                state.subscribedMods.forEach(id => {
+                    const m = WORKSHOP_MODS.find(mod => mod.id === id);
+                    if (m) m.subscribed = true;
+                });
+            }
+            if (Array.isArray(state.redeemedCodes)) {
+                state.redeemedCodes.forEach(c => REDEEMED_CODES.add(c));
+            }
+            if (state.debugModeUnlocked) {
+                debugModeUnlocked = true;
+                document.getElementById('btnAddFunds').style.display = 'flex';
+                document.getElementById('btnRemoveFunds').style.display = 'flex';
+            }
+            if (state.achievementCounters) {
+                totalPurchasesMade = state.achievementCounters.totalPurchasesMade || 0;
+                friendsAddedByUser = state.achievementCounters.friendsAddedByUser || 0;
+                forumPostsByUser = state.achievementCounters.forumPostsByUser || 0;
+                reviewsSubmittedCount = state.achievementCounters.reviewsSubmittedCount || 0;
+                codesRedeemedCount = state.achievementCounters.codesRedeemedCount || 0;
+            }
+            if (state.gameReviews) {
+                Object.keys(state.gameReviews).forEach(gameId => {
+                    REVIEWS_DATABASE[gameId] = state.gameReviews[gameId];
+                });
+            }
+            if (Array.isArray(state.launcherReviews)) {
+                state.launcherReviews.forEach(r => {
+                    if (!LAUNCHER_REVIEWS.some(existing => existing.author === r.author && existing.text === r.text)) {
+                        LAUNCHER_REVIEWS.unshift(r);
+                    }
+                });
+            }
+            if (Array.isArray(state.myForumPosts)) {
+                state.myForumPosts.forEach(p => {
+                    if (!COMMUNITY_POSTS.some(existing => existing.id === p.id)) {
+                        COMMUNITY_POSTS.unshift(p);
+                    }
+                });
+            }
+
+            // Refresca toda la interfaz con el estado ya cargado.
+            renderSidebarGames();
+            renderStoreGrid();
+            renderFriends();
+            renderSuggestions();
+            updateWalletUI();
+            renderStats();
+            applyMyProfileToUI();
+            updateLinkAccountRows();
+            renderCommunityFeed();
+            renderLauncherReviews();
+            renderRedeemedCodesLog();
+        }
+
+        function scheduleSave() {
+            if (isGuestSession || !currentUserId) return;
+            clearTimeout(saveDebounceTimer);
+            saveDebounceTimer = setTimeout(saveToCloud, 1200);
+        }
+
+        async function saveToCloud() {
+            if (isGuestSession || !currentUserId) return;
+            try {
+                await supabaseClient.from('launcher_saves').upsert({
+                    user_id: currentUserId,
+                    data: collectSaveState(),
+                    updated_at: new Date().toISOString()
+                });
+            } catch (err) {
+                // Silencioso: si falla el guardado no debe interrumpir el uso del launcher.
+            }
+        }
+
+        async function loadFromCloud(userId) {
+            try {
+                const { data } = await supabaseClient
+                    .from('launcher_saves')
+                    .select('data')
+                    .eq('user_id', userId)
+                    .maybeSingle();
+                if (data && data.data && Object.keys(data.data).length > 0) {
+                    applySaveState(data.data);
+                    return true;
+                }
+            } catch (err) {
+                // Sin conexión o sin datos guardados todavía — seguimos como usuario nuevo.
+            }
+            return false;
+        }
+
+        async function proceedPastAuth(userEmail, userId) {
             document.getElementById('authModal').style.display = 'none';
+            currentUserId = userId || null;
+
+            if (currentUserId) {
+                const loaded = await loadFromCloud(currentUserId);
+                if (loaded) {
+                    showToast(`¡Bienvenido de nuevo, ${MY_PROFILE.name}!`);
+                    return;
+                }
+            }
+
             if (userEmail) {
                 const suggestedName = userEmail.split('@')[0];
                 MY_PROFILE.name = suggestedName;
@@ -5253,7 +5415,7 @@
             try {
                 const { data } = await supabaseClient.auth.getSession();
                 if (data && data.session) {
-                    proceedPastAuth(data.session.user.email);
+                    proceedPastAuth(data.session.user.email, data.session.user.id);
                     return;
                 }
             } catch (err) {
@@ -5301,13 +5463,17 @@
                             setAuthError('Las contraseñas no coinciden.');
                             return;
                         }
-                        const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                        const { data, error } = await supabaseClient.auth.signUp({
+                            email,
+                            password,
+                            options: { emailRedirectTo: window.location.href }
+                        });
                         if (error) {
                             setAuthError(error.message);
                             return;
                         }
                         if (data.session) {
-                            proceedPastAuth(email);
+                            proceedPastAuth(email, data.session.user.id);
                         } else {
                             setAuthSuccess('¡Cuenta creada! Revisa tu correo para confirmar tu cuenta y luego inicia sesión.');
                         }
@@ -5317,7 +5483,7 @@
                             setAuthError(error.message);
                             return;
                         }
-                        proceedPastAuth(email);
+                        proceedPastAuth(email, data.user.id);
                     }
                 } catch (err) {
                     setAuthError('No se pudo conectar con el servidor de cuentas. Intenta de nuevo o entra como invitado.');
@@ -5376,6 +5542,7 @@
                 applyMyProfileToUI();
                 document.getElementById('welcomeSetupModal').style.display = 'none';
                 showToast(`¡Bienvenido, ${newName}!`);
+                scheduleSave();
 
                 // La foto de perfil puede ser una URL pegada o una imagen subida
                 // (data URL). Si es subida, se adjunta como archivo real; si es
@@ -5481,6 +5648,7 @@
             applyMyProfileToUI();
             document.getElementById('editProfileModal').style.display = 'none';
             showToast('Perfil actualizado.');
+            scheduleSave();
         };
 
         // ===== WORKSHOP =====
@@ -5561,6 +5729,7 @@
                     showToast(mod.subscribed ? `Suscrito a "${mod.title}".` : `Te has dado de baja de "${mod.title}".`);
                     renderWorkshop();
                     renderStats();
+                    scheduleSave();
                 };
                 grid.appendChild(card);
             });
@@ -5666,6 +5835,7 @@
                     renderFriends();
                     renderSuggestions();
                     renderStats();
+                    scheduleSave();
                 };
                 list.appendChild(card);
             });
@@ -5685,6 +5855,7 @@
                 activity: 'Recién agregado'
             });
             friendsAddedByUser++;
+            scheduleSave();
             showToast(`${name} añadido como amigo.`);
             renderFriends();
             renderStats();
