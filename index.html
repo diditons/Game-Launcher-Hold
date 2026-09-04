@@ -1408,6 +1408,39 @@
 
     .friend-card:hover { border-color: rgba(255, 255, 255, 0.12); }
 
+    .real-friend-result {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 10px 12px;
+    }
+
+    .real-friend-result-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #00bfff, #0066ff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .real-friend-result-name {
+        flex: 1;
+        font-size: 13px;
+        font-weight: 600;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .friend-avatar {
         width: 46px;
         height: 46px;
@@ -2110,6 +2143,41 @@
         </div>
     </div>
 
+    <div class="modal" id="requireAccountModal">
+        <div class="profile-card-modal" style="max-width:340px;">
+            <div class="profile-banner" style="height:70px; background: linear-gradient(90deg, #00c8ff, #0066ff); display:flex; align-items:center; justify-content:center;">
+                <span style="font-size:26px;">🔐</span>
+            </div>
+            <div class="profile-info-body" style="padding:0 22px 22px;">
+                <h2 class="profile-name" style="margin-top:12px; font-size:16px;">Necesitas una cuenta</h2>
+                <p class="profile-bio" style="margin-top:5px; font-size:12.5px;">Estás en modo invitado. Para agregar y chatear con otros usuarios reales del launcher, primero crea una cuenta o inicia sesión.</p>
+                <button class="btn-add-friend" id="btnGoRegisterFromDm" style="margin-top:14px;">Crear Cuenta / Iniciar Sesión</button>
+                <button class="settings-btn" id="btnCloseRequireAccount" style="width:100%; margin-top:9px;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addRealFriendModal">
+        <div class="profile-card-modal" style="max-width:380px;">
+            <div class="profile-banner" style="height:70px; background: linear-gradient(90deg, #00c8ff, #0066ff); display:flex; align-items:center; justify-content:center;">
+                <span style="font-size:26px;">🔎</span>
+            </div>
+            <div class="profile-info-body" style="padding:0 22px 22px;">
+                <h2 class="profile-name" style="margin-top:12px; font-size:16px;">Agregar Amigo</h2>
+                <p class="profile-bio" style="margin-top:4px; font-size:12px;">Busca por nombre de usuario a otras personas registradas en el launcher.</p>
+
+                <div style="display:flex; gap:8px; margin-top:12px;">
+                    <input type="text" id="realFriendSearchInput" placeholder="Nombre de usuario..." style="flex:1; padding:9px 11px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; color:white; font-family:inherit; font-size:13px; outline:none;">
+                    <button class="settings-btn" id="btnRealFriendSearch">Buscar</button>
+                </div>
+
+                <div id="realFriendSearchResults" style="display:flex; flex-direction:column; gap:8px; margin-top:14px; max-height:260px; overflow-y:auto;"></div>
+
+                <button class="settings-btn" id="btnCloseAddRealFriend" style="width:100%; margin-top:14px;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="authModal" style="display:flex;">
         <div class="profile-card-modal" style="max-width:380px;">
             <div class="profile-banner" style="height:70px; background: linear-gradient(90deg, #00c8ff, #0066ff); display:flex; align-items:center; justify-content:center;">
@@ -2196,7 +2264,7 @@
                                 <img src="" id="welcomeRobloxIcon" alt="Roblox" style="width:16px; height:16px; object-fit:contain;">
                                 Roblox
                             </button>
-                            <a href="https://discord.gg/9FuKTmagfF" target="_blank" class="settings-btn" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 0; font-size:12px; text-decoration:none; box-sizing:border-box;">
+                            <a href="https://discord.gg/cNh539xXFS" target="_blank" class="settings-btn" style="flex:1; display:flex; align-items:center; justify-content:center; gap:6px; padding:9px 0; font-size:12px; text-decoration:none; box-sizing:border-box;">
                                 <img src="https://static.vecteezy.com/system/resources/previews/023/986/880/non_2x/discord-logo-discord-logo-transparent-discord-icon-transparent-free-free-png.png" alt="Discord" style="width:16px; height:16px; object-fit:contain;">
                                 Discord
                             </a>
@@ -2663,7 +2731,10 @@
                 <div class="view" id="view-mensajes">
                     <div class="dm-layout">
                         <div class="dm-conversations">
-                            <div class="dm-conversations-header">Mensajes</div>
+                            <div class="dm-conversations-header" style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                                <span>Mensajes</span>
+                                <button id="btnAddRealFriend" class="wallet-add-btn" style="width:auto; height:auto; padding:6px 10px; border-radius:16px; font-size:11px; font-weight:700; white-space:nowrap;">+ Agregar Amigo</button>
+                            </div>
                             <div id="dmConversationList"></div>
                         </div>
                         <div class="dm-chat" id="dmChatPanel">
@@ -2702,7 +2773,7 @@
                     <div class="community-container">
                         <h2 class="section-title">🌐 Foro de la Comunidad</h2>
 
-                        <a href="https://discord.gg/9FuKTmagfF" target="_blank" class="discord-banner">
+                        <a href="https://discord.gg/cNh539xXFS" target="_blank" class="discord-banner">
                             <img src="https://static.vecteezy.com/system/resources/previews/023/986/880/non_2x/discord-logo-discord-logo-transparent-discord-icon-transparent-free-free-png.png" alt="Discord" class="discord-banner-icon">
                             <div class="discord-banner-text">
                                 <div class="discord-banner-title">Únete a nuestro servidor oficial de Discord</div>
@@ -5147,6 +5218,8 @@
                 document.getElementById('linkAccountModal').style.display = 'none';
                 document.getElementById('welcomeSetupModal').style.display = 'none';
                 document.getElementById('ageVerifyModal').style.display = 'none';
+                document.getElementById('addRealFriendModal').style.display = 'none';
+                document.getElementById('requireAccountModal').style.display = 'none';
             }
         });
 
@@ -5444,6 +5517,10 @@
             currentUserId = userId || null;
 
             if (currentUserId) {
+                await ensureOwnProfile(userEmail);
+                await loadRealFriends();
+                initRealtimeMessages();
+
                 const loaded = await loadFromCloud(currentUserId);
                 if (loaded) {
                     showToast(`¡Bienvenido de nuevo, ${MY_PROFILE.name}!`);
@@ -5457,6 +5534,236 @@
                 applyMyProfileToUI();
             }
             openWelcomeSetupModal();
+        }
+
+        // ===== USUARIOS REGISTRADOS REALES (perfiles, amigos, mensajes) =====
+        const REAL_FRIENDS_DATABASE = [];
+        let realtimeChannel = null;
+
+        async function ensureOwnProfile(userEmail) {
+            try {
+                const { data: existing } = await supabaseClient
+                    .from('profiles')
+                    .select('id, username')
+                    .eq('id', currentUserId)
+                    .maybeSingle();
+                if (existing) return;
+
+                let baseName = (userEmail ? userEmail.split('@')[0] : MY_PROFILE.name || 'jugador')
+                    .toLowerCase().replace(/[^a-z0-9_]/g, '') || 'jugador';
+                let attemptName = baseName;
+                for (let i = 0; i < 5; i++) {
+                    const { error } = await supabaseClient
+                        .from('profiles')
+                        .insert({ id: currentUserId, username: attemptName, display_name: MY_PROFILE.name });
+                    if (!error) return;
+                    // Si el nombre ya existe, probamos con un sufijo numérico.
+                    attemptName = `${baseName}${Math.floor(Math.random() * 9000) + 1000}`;
+                }
+            } catch (err) {
+                // Sin conexión: el perfil se puede crear más tarde.
+            }
+        }
+
+        async function loadRealFriends() {
+            try {
+                const { data: rels } = await supabaseClient
+                    .from('real_friends')
+                    .select('friend_id')
+                    .eq('user_id', currentUserId);
+                if (!rels || rels.length === 0) return;
+
+                const ids = rels.map(r => r.friend_id);
+                const { data: profiles } = await supabaseClient
+                    .from('profiles')
+                    .select('id, username, display_name')
+                    .in('id', ids);
+
+                REAL_FRIENDS_DATABASE.length = 0;
+                (profiles || []).forEach(p => {
+                    REAL_FRIENDS_DATABASE.push({
+                        id: p.id,
+                        name: p.display_name || p.username,
+                        avatar: (p.display_name || p.username).charAt(0).toUpperCase(),
+                        avatarBg: '#00c8ff',
+                        online: true,
+                        isReal: true,
+                        activity: 'Usuario del launcher'
+                    });
+                });
+                renderDmConversationList();
+            } catch (err) {
+                // Sin conexión: seguimos solo con los contactos ya cargados en memoria.
+            }
+        }
+
+        function initRealtimeMessages() {
+            if (realtimeChannel) supabaseClient.removeChannel(realtimeChannel);
+            realtimeChannel = supabaseClient
+                .channel('real_messages_' + currentUserId)
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'real_messages',
+                    filter: `recipient_id=eq.${currentUserId}`
+                }, handleIncomingRealMessage)
+                .subscribe();
+        }
+
+        async function handleIncomingRealMessage(payload) {
+            const msg = payload.new;
+            const senderId = msg.sender_id;
+
+            // Si nos escribe alguien que todavía no tenemos como contacto,
+            // lo agregamos automáticamente para poder verlo en la lista.
+            if (!REAL_FRIENDS_DATABASE.some(f => f.id === senderId)) {
+                try {
+                    const { data: profile } = await supabaseClient
+                        .from('profiles')
+                        .select('id, username, display_name')
+                        .eq('id', senderId)
+                        .maybeSingle();
+                    if (profile) {
+                        REAL_FRIENDS_DATABASE.push({
+                            id: profile.id,
+                            name: profile.display_name || profile.username,
+                            avatar: (profile.display_name || profile.username).charAt(0).toUpperCase(),
+                            avatarBg: '#00c8ff',
+                            online: true,
+                            isReal: true,
+                            activity: 'Usuario del launcher'
+                        });
+                    }
+                } catch (err) { /* seguimos sin el nombre si falla */ }
+            }
+
+            const convo = ensureConversation(senderId);
+            convo.push({ from: 'them', text: msg.content, time: new Date(msg.created_at).getTime() });
+
+            if (activeDmFriendId === senderId) {
+                renderDmMessages(senderId);
+            } else {
+                const friend = REAL_FRIENDS_DATABASE.find(f => f.id === senderId);
+                showToast(`💬 Nuevo mensaje de ${friend ? friend.name : 'un usuario'}`);
+            }
+            renderDmConversationList();
+        }
+
+        async function loadRealMessages(friendId) {
+            try {
+                const { data } = await supabaseClient
+                    .from('real_messages')
+                    .select('sender_id, content, created_at')
+                    .or(`and(sender_id.eq.${currentUserId},recipient_id.eq.${friendId}),and(sender_id.eq.${friendId},recipient_id.eq.${currentUserId})`)
+                    .order('created_at', { ascending: true });
+
+                DM_CONVERSATIONS[friendId] = (data || []).map(m => ({
+                    from: m.sender_id === currentUserId ? 'me' : 'them',
+                    text: m.content,
+                    time: new Date(m.created_at).getTime()
+                }));
+            } catch (err) {
+                // Sin conexión: mostramos lo que ya teníamos en memoria.
+            }
+        }
+
+        function findAnyFriend(friendId) {
+            return FRIENDS_DATABASE.find(f => f.id === friendId) || REAL_FRIENDS_DATABASE.find(f => f.id === friendId);
+        }
+
+        function initAddRealFriend() {
+            document.getElementById('btnAddRealFriend').onclick = () => {
+                if (isGuestSession || !currentUserId) {
+                    document.getElementById('requireAccountModal').style.display = 'flex';
+                    return;
+                }
+                document.getElementById('realFriendSearchInput').value = '';
+                document.getElementById('realFriendSearchResults').innerHTML = '';
+                document.getElementById('addRealFriendModal').style.display = 'flex';
+            };
+
+            document.getElementById('btnCloseRequireAccount').onclick = () => {
+                document.getElementById('requireAccountModal').style.display = 'none';
+            };
+            document.getElementById('btnGoRegisterFromDm').onclick = () => {
+                document.getElementById('requireAccountModal').style.display = 'none';
+                showToast('Cierra sesión de invitado desde Ajustes para crear una cuenta.');
+            };
+            document.getElementById('btnCloseAddRealFriend').onclick = () => {
+                document.getElementById('addRealFriendModal').style.display = 'none';
+            };
+
+            async function runSearch() {
+                const term = document.getElementById('realFriendSearchInput').value.trim();
+                const results = document.getElementById('realFriendSearchResults');
+                if (!term) {
+                    results.innerHTML = '<p style="font-size:12px; color:#777;">Escribe un nombre de usuario para buscar.</p>';
+                    return;
+                }
+                results.innerHTML = '<p style="font-size:12px; color:#777;">Buscando...</p>';
+
+                try {
+                    const { data } = await supabaseClient
+                        .from('profiles')
+                        .select('id, username, display_name')
+                        .ilike('username', `%${term}%`)
+                        .neq('id', currentUserId)
+                        .limit(10);
+
+                    if (!data || data.length === 0) {
+                        results.innerHTML = '<p style="font-size:12px; color:#777;">No se encontró ningún usuario con ese nombre.</p>';
+                        return;
+                    }
+
+                    results.innerHTML = '';
+                    data.forEach(p => {
+                        const alreadyFriend = REAL_FRIENDS_DATABASE.some(f => f.id === p.id);
+                        const row = document.createElement('div');
+                        row.className = 'real-friend-result';
+                        row.innerHTML = `
+                            <div class="real-friend-result-avatar">${(p.display_name || p.username).charAt(0).toUpperCase()}</div>
+                            <div class="real-friend-result-name">${p.display_name || p.username}</div>
+                            <button class="settings-btn" data-user-id="${p.id}" data-user-name="${p.display_name || p.username}" ${alreadyFriend ? 'disabled' : ''}>${alreadyFriend ? '✓ Agregado' : '+ Agregar'}</button>
+                        `;
+                        results.appendChild(row);
+                    });
+
+                    results.querySelectorAll('button[data-user-id]').forEach(btn => {
+                        btn.onclick = async () => {
+                            const friendId = btn.getAttribute('data-user-id');
+                            const friendName = btn.getAttribute('data-user-name');
+                            btn.disabled = true;
+                            btn.textContent = 'Agregando...';
+                            try {
+                                await supabaseClient.from('real_friends').insert({ user_id: currentUserId, friend_id: friendId });
+                                REAL_FRIENDS_DATABASE.push({
+                                    id: friendId,
+                                    name: friendName,
+                                    avatar: friendName.charAt(0).toUpperCase(),
+                                    avatarBg: '#00c8ff',
+                                    online: true,
+                                    isReal: true,
+                                    activity: 'Usuario del launcher'
+                                });
+                                btn.textContent = '✓ Agregado';
+                                showToast(`${friendName} agregado como amigo.`);
+                                renderDmConversationList();
+                            } catch (err) {
+                                btn.disabled = false;
+                                btn.textContent = '+ Agregar';
+                                showToast('No se pudo agregar. Intenta de nuevo.');
+                            }
+                        };
+                    });
+                } catch (err) {
+                    results.innerHTML = '<p style="font-size:12px; color:#ff4747;">No se pudo buscar. Revisa tu conexión.</p>';
+                }
+            }
+
+            document.getElementById('btnRealFriendSearch').onclick = runSearch;
+            document.getElementById('realFriendSearchInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') runSearch();
+            });
         }
 
         async function initAuth() {
@@ -5944,7 +6251,7 @@
             const container = document.getElementById('dmConversationList');
             container.innerHTML = '';
 
-            FRIENDS_DATABASE.forEach(friend => {
+            FRIENDS_DATABASE.concat(REAL_FRIENDS_DATABASE).forEach(friend => {
                 const convo = ensureConversation(friend.id);
                 const lastMsg = convo[convo.length - 1];
                 const item = document.createElement('div');
@@ -5955,7 +6262,7 @@
                         <span class="friend-status-dot" style="background:${friend.online ? '#00e676' : '#555'};"></span>
                     </div>
                     <div class="dm-conv-info">
-                        <div class="dm-conv-name">${friend.name}</div>
+                        <div class="dm-conv-name">${friend.name}${friend.isReal ? ' <span style="font-size:10px; color:#00c8ff;">● real</span>' : ''}</div>
                         <div class="dm-conv-preview">${lastMsg ? (lastMsg.from === 'me' ? 'Tú: ' : '') + lastMsg.text : 'Sin mensajes todavía'}</div>
                     </div>
                 `;
@@ -5971,9 +6278,9 @@
             messagesEl.scrollTop = messagesEl.scrollHeight;
         }
 
-        function openConversation(friendId) {
+        async function openConversation(friendId) {
             activeDmFriendId = friendId;
-            const friend = FRIENDS_DATABASE.find(f => f.id === friendId);
+            const friend = findAnyFriend(friendId);
             if (!friend) return;
 
             document.getElementById('dmChatEmpty').style.display = 'none';
@@ -5981,28 +6288,51 @@
             document.getElementById('dmChatHeader').innerHTML = `
                 <div class="dm-conv-avatar" style="width:32px; height:32px; font-size:14px; background:${friend.avatarBg};">${friend.avatar}</div>
                 <span>${friend.name}</span>
-                <span style="font-size:11px; color:${friend.online ? '#00e676' : '#666'}; font-weight:400;">${friend.online ? '• En línea' : '• Desconectado'}</span>
+                <span style="font-size:11px; color:${friend.online ? '#00e676' : '#666'}; font-weight:400;">${friend.isReal ? '• Usuario real' : (friend.online ? '• En línea' : '• Desconectado')}</span>
             `;
+
+            if (friend.isReal) {
+                document.getElementById('dmChatMessages').innerHTML = '<div style="text-align:center; color:#777; font-size:12px; padding:20px 0;">Cargando mensajes...</div>';
+                await loadRealMessages(friendId);
+            }
 
             renderDmMessages(friendId);
             renderDmConversationList();
             document.getElementById('dmChatInput').focus();
         }
 
-        function sendDm() {
+        async function sendDm() {
             if (!activeDmFriendId) return;
             const input = document.getElementById('dmChatInput');
             const text = input.value.trim();
             if (text === '') return;
 
+            const friend = findAnyFriend(activeDmFriendId);
             const convo = ensureConversation(activeDmFriendId);
-            convo.push({ from: 'me', text, time: Date.now() });
             input.value = '';
+
+            if (friend && friend.isReal) {
+                // Mensaje real: se guarda en Supabase, no solo en memoria.
+                convo.push({ from: 'me', text, time: Date.now() });
+                renderDmMessages(activeDmFriendId);
+                renderDmConversationList();
+                try {
+                    await supabaseClient.from('real_messages').insert({
+                        sender_id: currentUserId,
+                        recipient_id: activeDmFriendId,
+                        content: text
+                    });
+                } catch (err) {
+                    showToast('No se pudo enviar el mensaje. Revisa tu conexión.');
+                }
+                return;
+            }
+
+            convo.push({ from: 'me', text, time: Date.now() });
             renderDmMessages(activeDmFriendId);
             renderDmConversationList();
             scheduleSave();
 
-            const friend = FRIENDS_DATABASE.find(f => f.id === activeDmFriendId);
             if (friend && friend.online) {
                 const replyDelay = 900 + Math.random() * 1400;
                 setTimeout(() => {
@@ -6017,6 +6347,7 @@
 
         function initMessages() {
             renderDmConversationList();
+            initAddRealFriend();
             document.getElementById('dmChatSendBtn').onclick = sendDm;
             document.getElementById('dmChatInput').addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') sendDm();
