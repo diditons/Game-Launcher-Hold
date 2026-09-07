@@ -2994,6 +2994,7 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let currentAuthTab = 'login';
         let isGuestSession = false;
+
         const GAMES_DATABASE = {
             beamng: {
                 id: 'beamng',
@@ -3398,6 +3399,30 @@
                     rec: { os: 'Windows 10', cpu: '3 GHz', ram: '8 GB', gpu: 'Compatible con DX10 (shader model 4.0)', directx: 'Versión 12', storage: '1 GB' }
                 },
                 stats: { stat1: ['Popularidad', '97% Positive'], stat2: ['Objetos', 'Cientos'], stat3: ['Espacio', '350 MB'] }
+            },
+            garrysmod: {
+                id: 'garrysmod',
+                title: "Garry's Mod",
+                subtitle: 'Un sandbox físico sin objetivos predefinidos: te damos las herramientas y tú decides qué crear.',
+                emoji: '🔧',
+                icon: 'https://cdn2.steamgriddb.com/icon/131f383b434fdf48079bff1e44e2d9a5/32/256x256.png',
+                banner: 'https://cdn2.steamgriddb.com/thumb/1b36acaec341dc629e8474ddefb22042.jpg',
+                gifUrl: 'https://cdn2.steamgriddb.com/hero_thumb/ea6bff14792a163243d74d45474a5052.jpg',
+                genre: 'Sandbox, Casual, Simulación',
+                bgGradient: 'linear-gradient(135deg, #0f1a1a, #ff8c00)',
+                priceValue: 9.99,
+                price: '$9.99 USD',
+                isInstalled: false,
+                wishlisted: false,
+                steamUrl: 'https://drive.google.com/uc?export=download&id=1DVc4Nc1zSsDdMcuqvUFAaxn_xqt8rkkw',
+                desc: "Garry's Mod es un sandbox de física. No hay objetivos predefinidos: te damos las herramientas y te dejamos jugar. Usa una versión modificada del motor Source con el motor de física Havok para crear todo tipo de contraptions y objetos que siguen las leyes de la física. Incluye un Workshop de la comunidad con más de 300,000 modelos, mapas y creaciones, además de modos populares como Trouble in Terrorist Town y Prop Hunt.",
+                dev: 'Facepunch Studios',
+                playtimeHours: 40,
+                requirements: {
+                    min: { os: 'Windows XP / Vista / 7 / 8', cpu: '2 GHz o mejor', ram: '4 GB', gpu: 'VRAM dedicada de 512 MB o mejor', directx: 'Versión 9.0c', storage: '5 GB' },
+                    rec: { os: 'Windows 10/11', cpu: '2.5 GHz o mejor', ram: '8 GB', gpu: 'VRAM dedicada de 4 GB o mejor', directx: 'Versión 9.0c', storage: '25 GB' }
+                },
+                stats: { stat1: ['Popularidad', '97% Positive'], stat2: ['Workshop', '300k+ items'], stat3: ['Espacio', '5 GB'] }
             }
         };
 
